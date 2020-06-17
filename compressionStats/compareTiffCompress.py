@@ -36,7 +36,6 @@ def generate_compression_options(fullFilePath,checkIfRun=True):
 
         if checkIfRun:
             l = c['htanAnalytics']['compressionStats'].find_one({'origCompressionDict':compressOptions})
-#{'compressionMethod':cs,'filename':filename})
             if l:
                 print(l['origFileName'],"Already compelted")
             else:
@@ -45,7 +44,8 @@ def generate_compression_options(fullFilePath,checkIfRun=True):
 
 # https://www.machinelearningplus.com/python/parallel-processing-python/
 
-pool = mp.Pool(mp.cpu_count())
+#pool = mp.Pool(mp.cpu_count())
+pool = mp.Pool(4)
 
 print("Will be running on %d cores" % mp.cpu_count())
 
