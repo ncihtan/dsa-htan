@@ -8,19 +8,13 @@ from pymongo import MongoClient
 import shutil 
 import psutil 
 from random import shuffle
-
 #from libtiff import TIFFfile, TIFFimage
 
 c = MongoClient()
 
-#omeTiffDir = "/nvmen1Scratch/origData/htan-tnp-sardana-hms-prerelease-phase-1-data/*.ome.tif"
 outputDir = "/nvmen1Scratch/origData/htan-tnp-sardana-hms-prerelease-phase-1-data/recompressed/"
- 
 omeTiffDir = "/s3FuseMounts/dgutman-htan-s3-synapse/htan-tnp-sardana-hms-prerelease-phase-1-data/*.ome.tif"
 fileSet = glob.glob(omeTiffDir)
-#print(fileSet)
-
-## os.remove()
 
 def generate_compression_options(fullFilePath,checkIfRun=True):
     compressStrings = ["lzw","zip","zip:2"]  ## removed lzma  and ztsd and ztsd:2
@@ -43,10 +37,8 @@ def generate_compression_options(fullFilePath,checkIfRun=True):
     return csOptionsToRun
 
 # https://www.machinelearningplus.com/python/parallel-processing-python/
-
 #pool = mp.Pool(mp.cpu_count())
 pool = mp.Pool(4)
-
 print("Will be running on %d cores" % mp.cpu_count())
 
 def get_tiff_stats( compressionDict ):
@@ -72,13 +64,11 @@ def get_tiff_stats( compressionDict ):
     except:
         print("Something wrong with command string",cd)
 
-
     disk = psutil.disk_usage('/nvmen1Scratch')
     if (disk.percent > 80):
         os.remove(outputFileNameWpath)
 
     return(compressInfo)
-
 
 pool = mp.Pool(mp.cpu_count())
 compressionOptionSet = []
