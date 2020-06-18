@@ -17,7 +17,7 @@ omeTiffDir = "/s3FuseMounts/dgutman-htan-s3-synapse/htan-tnp-sardana-hms-prerele
 fileSet = glob.glob(omeTiffDir)
 
 def generate_compression_options(fullFilePath,checkIfRun=True):
-    compressStrings = ["lzw","zip","zip:2"]  ## removed lzma  and ztsd and ztsd:2
+    compressStrings = ["lzw","zip","zip:2","lzma","jpeg:95","jpeg:90"]  ## removed lzma  and ztsd and ztsd:2
     tileString = ["-8","-t","-w","256","-l","256","-L"]
     filename = os.path.basename(fullFilePath)
     csOptionsToRun = []
@@ -38,8 +38,6 @@ def generate_compression_options(fullFilePath,checkIfRun=True):
 
 # https://www.machinelearningplus.com/python/parallel-processing-python/
 #pool = mp.Pool(mp.cpu_count())
-pool = mp.Pool(4)
-print("Will be running on %d cores" % mp.cpu_count())
 
 def get_tiff_stats( compressionDict ):
     start_time = time.time() ## Calculating run time
@@ -70,7 +68,11 @@ def get_tiff_stats( compressionDict ):
 
     return(compressInfo)
 
-pool = mp.Pool(mp.cpu_count())
+
+#pool = mp.Pool(processes=2)
+#print("Will be running on %d cores" % mp.cpu_count())
+
+pool = mp.Pool(processes=4)
 compressionOptionSet = []
 
 for f in fileSet:
