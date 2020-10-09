@@ -66,6 +66,7 @@ export default class UploadMetadataView extends JetView {
 			resizeColumn: true,
 			tooltip: true,
 			borderless: true,
+			editaction: "dblclick",
 			data: [],
 			rules: {
 				$obj: (obj) => {

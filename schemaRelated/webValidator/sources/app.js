@@ -8,7 +8,8 @@ export default class App extends JetApp{
 			id 		: APPNAME,
 			version : VERSION,
 			debug 	: !PRODUCTION,
-			start 	: "/top/start"
+			start 	: "/top/start",
+			name: "DSA JsonSchemaValidator"
 		};
 
 		super({ ...defaults, ...config });
