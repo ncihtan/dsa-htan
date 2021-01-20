@@ -17,7 +17,7 @@ omeTiffDir = "/s3FuseMounts/dgutman-htan-s3-synapse/htan-tnp-sardana-hms-prerele
 fileSet = glob.glob(omeTiffDir)
 
 def generate_compression_options(fullFilePath,checkIfRun=True):
-    compressStrings = ["lzw","zip","zip:2","lzma","jpeg:95","jpeg:90"]  ## removed lzma  and ztsd and ztsd:2
+    compressStrings = ["lzw","zip","zip:2","jpeg:95","jpeg:90","jbig","zstd","ztsd:2"]  ## removed lzma  and ztsd and ztsd:2 and lzma is hidden again
     tileString = ["-8","-t","-w","256","-l","256","-L"]
     filename = os.path.basename(fullFilePath)
     csOptionsToRun = []
