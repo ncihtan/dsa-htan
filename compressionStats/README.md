@@ -11,3 +11,5 @@ pip3 install libtiff --find-links https://girder.github.io/large_image_wheels  -
 
  python3 -m pip install  --find-links https://girder.github.io/large_image_wheels  --force-reinstall --no-cache-dir -I libtiff
 
+
+pip uninstall large_image_source-bioformats
