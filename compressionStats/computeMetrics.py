@@ -38,11 +38,12 @@ for r in c['dsaCompressionStats']['tiffData'].find():
         ci['filename'] = r['filename']
         ci['fileSize'] = r['fileSize']
         ci['recType'] = r['recType']
-#    ci['tileSize'] = lic['arguments']['tileSize']
+        ci['sixeX'] = tiffTag['metadata']['sizeX']
+        ci['sixeY'] = tiffTag['metadata']['sizeY']
+        ci['frames'] = len(tiffTag['metadata']['frames'])
+        ci['bitsPerSample'] = r['recompressionInfo']['ifds'][0]['tags']['258']['data'][0]
     print(ci)
-#    r['compressionRate'] = r['compressedFileSize']/r['origFileSize']*100
 
-#    print('{executionTime:0.2f};{compressionMethod};{compressionRate:0.2f};{origFileSize};{compressedFileSize}'.format(**r))
     docsFound +=1
     compressData.append(ci)
 
