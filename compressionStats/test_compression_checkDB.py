@@ -62,23 +62,10 @@ matrix = [[
 matrixV2 = [[
     ['--compression', 'jpeg'],
     ['--compression', 'jpeg', '-q', '95'],
-    ['--compression', 'jpeg', '-q', '90'],
-    ['--compression', 'jpeg', '-q', '80'],
-    ['--compression', 'jpeg', '-q', '70'],
-    ['--compression', 'deflate'],
-    ['--compression', 'zstd'],
-    ['--compression', 'zstd', '--level', '1'],
-    ['--compression', 'zstd', '--level', '9'],
-    ['--compression', 'zstd', '--level', '22'],
     ['--compression', 'packbits'],
     ['--compression', 'jp2k'],
-    ['--compression', 'jp2k', '--psnr', '80'],
     ['--compression', 'jp2k', '--psnr', '70'],
-    ['--compression', 'jp2k', '--psnr', '60'],
-    ['--compression', 'jp2k', '--psnr', '50'],
-    ['--compression', 'jp2k', '--psnr', '40'],
     ['--compression', 'jp2k', '--cr', '100', ''],
-    ['--compression', 'jp2k', '--cr', '1000', ''],
     ['--compression', 'jp2k', '--cr', '10000'],
 ], [
     [],  # 256
