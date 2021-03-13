@@ -179,6 +179,41 @@ def create_curated_folder(girderClient, FolderToCurate_ID, TargetFolder_ID, stai
     stats = dict([('SlidesThatFailed',SlidesThatFailed),('Errors', allerrors)])
     return stats
 
+
+## I can add an offest if I want to this call
+class LinePrinter():
+    """
+    Print things to stdout on one line dynamically
+    """
+    def __init__(self,data):
+        sys.stdout.write("\r\x1b[K"+data.__str__())
+        sys.stdout.flush()
+        
+def getAllItems( client, folderOrCollectionId, parentType='folder', batchSize = 1000, offset=0, debug=False ):
+    # client is the girder client Object
+    # I am making this more generic, so I can pass a folder or collection Id
+    # This now returns a generator so should be more efficient
+#     itemSet = []
+    limit = batchSize
+    batchesProcessed = 0
+    colId = folderOrCollectionId
+
+    getStr = "resource/%s/items?limit=%d&offset=%d&type=%s" % (colId,limit,offset,parentType) 
+    #if debug: print(getStr)
+    gcImageList = client.get( getStr)
+
+    while gcImageList:
+        for i in gcImageList:
+            yield(i)
+        batchesProcessed +=1
+
+        getStr = "resource/%s/items?limit=%d&offset=%d&type=%s" % ( colId,batchSize,(int(batchSize)*int(batchesProcessed)),parentType) 
+        if debug:
+            output = "Processed %d items" % (int(batchSize)*int(batchesProcessed))
+            LinePrinter(output)
+        gcImageList = client.get( getStr)  
+
+
 '''
 def recurseGetItems(client, folderId, parentType='folder', printLog=False):
     
