@@ -1,11 +1,11 @@
 import girder_client
-from secrets import apiKey
+from dsaSecrets import dsaApiKey
 import girder_utils as gu
 import tqdm
 
 ## Connect to the girder Client
 gc = girder_client.GirderClient(apiUrl="https://imaging.htan.dev/girder/api/v1")
-gc.authenticate(apiKey=apiKey)
+gc.authenticate(apiKey=dsaApiKey)
 
 ## The DCC buckets are currently all folders in the DCCBucketSync collection on the HTAN DSA instance
 dccFolderList = gc.listFolder('5fa99a0051de21dd08ca7dfa',parentFolderType='collection')

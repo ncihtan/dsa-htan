@@ -20,7 +20,7 @@ dataSetsToSync = [{'fullSynapseName':'HTAN TNP - SARDANA','localAbbrev':'HTAN_TN
 
 ## load image metadata file Sheila generated
 
-with open("./imagesWithMetadata.v1.json","r") as fp:
+with open("./testData/image-rel1-metadata-20210426-153033.json","r") as fp:
 	imd = json.load(fp)
 
 print(len(imd),"images are in the current image metadata file")
@@ -32,7 +32,7 @@ for i in tqdm.tqdm(imd):
 	if not os.path.isdir( curSyncDir):
 	    os.makedirs(curSyncDir)
 	try:
-		synapseutils.sync.syncFromSynapse(syn,i['SynapseID'],path=curSyncDir,ifcollision='keep.local')
+		synapseutils.sync.syncFromSynapse(syn,i['SynapseID'],path=curSyncDir,ifcollision='overwrite.local')
 	except:
 		print("Problem with current file...")
 		print(i)
