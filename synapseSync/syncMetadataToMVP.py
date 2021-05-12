@@ -60,7 +60,10 @@ def formatChannelData( internal_metadata ):
 
 problemItems = []
 
+itemData = []
+
 for i in itemSet:
+	itemData.append(i)
 	if 'largeImage' not in i:
 		needsLargeImage+=1
 		if createLargeImages: createLargeImage(gc,i['_id'])
@@ -91,14 +94,18 @@ for i in itemSet:
 print("Creating large image for %d images and added metadata to %d images" % (needsLargeImage,addedMeta))
 
 
+dsaRootUrl = "https://imaging.htan.dev/girder/api/v1/"
 
 
-#  {
-#        "channel_name": "DNA 1",
-#        "channel_number": 0,
-#        "cycle_number": 0,
-#        "emission_wavelength": 431,
-#        "excitation_wavelength": 395,
-#        "label": "Hoechst 33342",
-#        "marker_name": "DNA 1"
-#    },
+dsaCrossWalk =  {x['meta']['htanMeta']['SynapseID']:{ 'dsaId': x['_id'],
+		'dsaSmallThumbUrl' : dsaRootUrl + "item/" + x['_id'] + "/tiles/thumbnail" } for x in itemData} 
+
+with open("mvpImageData.working.json","w") as fp:
+	json.dump(dsaCrossWalk,fp)
+
+
+## imageBitDepth
+##
+
+## ioParams: { defaultImgThumbUrl: "", imageBitDepth: ""}
+
