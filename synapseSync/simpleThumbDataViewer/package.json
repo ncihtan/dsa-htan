@@ -1,0 +1,15 @@
+{
+  "name": "simplethumbdataviewer",
+  "version": "1.0.0",
+  "description": "Simple thumbnail viewer for DSA HTAN",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "flatten": "^1.0.3",
+    "webix": "^8.3.0"
+  }
+}
