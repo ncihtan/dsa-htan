@@ -30,8 +30,8 @@
                         localId: 'histogramChart',
                         id: 'histogramChart',
                         view: "chart",
-                        height: 360,
-                        width: 530,
+                        height: 460,
+                        width: 630,
                         type: "splineArea",
                         scale: "logarithmic",
                         yValue: "#yValue#",
@@ -41,12 +41,19 @@
                             template: yValue => (yValue % 50 ? "" : `<span title='${yValue}' class='y-axis-number-item ellipsis-text'>${yValue}</span>`)
                         },
                         xAxis: {
-                            start: 0,
-                            end: 255,
-                            step: 50,
-                            template: ({
-                                xValue
-                            }) => (xValue % 10 ? "" : `<span title='${xValue}'>${xValue}</span>`)
+                            // start: 0,
+                            // end: 255,
+                            // step: 0,
+                            template: function(obj) {
+
+                                    return (obj.binNum % 25 ? "" : `<span title='${Math.floor(obj.xValue)}'>${Math.floor(obj.xValue)}</span>`)
+
+
+                                }
+                                //#"#xValue#"
+                                // obj => {
+                                // }
+
                         }
                     }, {
                         margin: 5,
@@ -178,9 +185,12 @@
                         const histogram = d[0];
                         const chartValues = histogram.hist.map((value, i) => ({
                             xValue: histogram.bin_edges[i],
-                            yValue: value
+                            yValue: value,
+                            binNum: i
                         }));
                         $$('histogramChart').clearAll();
+
+                        console.log(chartValues)
                         $$('histogramChart').parse(chartValues);
                         console.log(chartValues)
 
