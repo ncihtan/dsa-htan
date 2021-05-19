@@ -1,303 +1,376 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
-
-<head>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="//cdn.webix.com/edge/webix.css" type="text/css">
+  <head>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="//cdn.webix.com/edge/webix.css"
+      type="text/css"
+    />
     <script src="//cdn.webix.com/edge/webix.js" type="text/javascript"></script>
     <style>
-        .webix_axis_item_x {
-            padding-top: 5px;
-            padding-left: 10px;
-            transform: rotate(90deg);
-        }
+      .webix_axis_item_x {
+        padding-top: 5px;
+        padding-left: 10px;
+        transform: rotate(90deg);
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <script type="text/javascript" charset="utf-8">
-        /* app code */
+      /* app code */
 
-        const serverApiURL = "https://imaging.htan.dev/girder/api/v1/"
+      function smartThumb(obj) {
+        console.log(obj);
 
-        var histChart = {
-            id: "histChart",
-            //            height: 400,
-            body: {
-                view: "form",
-                id: 'histForm',
-                elements: [{
-                        localId: 'histogramChart',
-                        id: 'histogramChart',
-                        view: "chart",
-                        height: 460,
-                        width: 630,
-                        type: "splineArea",
-                        scale: "logarithmic",
-                        yValue: "#yValue#",
-                        color: "#36abee",
-                        dynamic: false,
-                        yAxis: {
-                            template: yValue => (yValue % 50 ? "" : `<span title='${yValue}' class='y-axis-number-item ellipsis-text'>${yValue}</span>`)
-                        },
-                        xAxis: {
-                            // start: 0,
-                            // end: 255,
-                            // step: 0,
-                            template: function(obj) {
+        if (obj.meta.DSAGroupSet && obj.meta.DSAGroupSet.length > 0) {
+          console.log(obj.meta.DSAGroupSet);
 
-                                    return (obj.binNum % 25 ? "" : `<span title='${Math.floor(obj.xValue)}'>${Math.floor(obj.xValue)}</span>`)
+          var styleInfo = { bands: [] };
+          obj.meta.DSAGroupSet[0].channels.forEach((c) => {
+            console.table(c);
 
+            styleInfo.bands.push({
+              min: c.min,
+              max: c.max,
+              palette: ["rgb(0,0,0)", c.color],
+              frame: c.index,
+            });
+          });
 
-                                }
-                                //#"#xValue#"
-                                // obj => {
-                                // }
+          obj.thumbStyle = "style=" + JSON.stringify(styleInfo);
 
-                        }
-                    }, {
-                        margin: 5,
-                        cols: [{
-                            name: "min",
-                            view: "text",
-                            label: "min"
-                        }, {
-                            name: "max",
-                            view: "text",
-                            label: "max"
-                        }]
-                    }, {
-                        margin: 5,
-                        cols: [{
-                            name: "range",
-                            view: "text",
-                            label: "range"
-                        }, {
-                            name: "samples",
-                            view: "text",
-                            label: "samples"
-                        }]
-                    }
-
-                ]
-            }
+          $$("groupsChannelList").clearAll();
+          $$("groupsChannelList").parse(styleInfo.bands);
+        } else {
+          obj.thumbStyle = "";
         }
 
-        // this._colorPicker,
-        // this._rangeSlider,
-        // {
-        //         cols: [
-        //                 {
-        //                         view: "button",
-        //                         css: "btn-contour",
-        //                         label: "Cancel",
-        //                         click: () => {
-        //                                 this.getForm().setValues(this._initValues);
-        //                                 this.applyChanges();
-        //                                 this.closeWindow();
-        //                         }
-        //                 },
-        //                 {},
+        $$("thumbSceneImg").setValues(obj);
+      }
 
-        //         style: {"min":0,"max":15000,"palette":["rgb(0,0,0)","hsl(270, 100%, 50%)"]}
+      var groupsPanel = {
+        id: "groupsChannel",
+        hidden: false,
+        rows: [
+          {
+            template: "Group channels:",
+            height: 30,
+          },
+          {
+            view: "list",
+            id: "groupsChannelList",
+            css: "groups-channels-list",
+            drag: true,
+            scroll: "auto",
+            navigation: false,
+            select: false,
+            template: function (obj) {
+              console.log(obj);
+              // ({ name, color, opacity }) => {
+              var opacity = true;
+              const showIcon = opacity ? "mdi mdi-eye" : "mdi mdi-eye-off";
+              return `<span class="channel-item__name name">${name}</span>
+                                                                          <div class="icons">
+                                                                                  <span style="color: ${obj.palette[1]};" class="icon palette mdi mdi-square">${obj.palette[1]}</span>
+                                                                                  <span style="color: ;" class="icon palette mdi mdi-square">${obj.min}</span> <span>${obj.max}</span>
+                                                                                  <span class="icon show ${showIcon}"></span>
+                                                                                  <span class="icon delete mdi mdi-minus-circle"></span>
+                                                                          </div>`;
+            },
 
-        // this one looks fine...
+            onClick: {
+              //   show: (ev, id) => {
+              //     this.showOrHideChannel(id);
+              //   },
+              //   delete: (ev, id) => {
+              //     this.removeChannel(id);
+              //   },
+              //   palette: (ev, id) => {
+              //     this.showPaletteWindow(id);
+              //   },
+            },
+          },
+        ],
+      };
 
+      /* Let's write a very simple Band Viewer to try and manually tweak this stuff */
 
+      var sceneSetDataView = { id: "sceneSetDataView" };
 
-        // 608c6f1ec5ef1e6743780d54 is the image ID.. and 10 is the frame..
+      const serverApiURL = "https://imaging.htan.dev/girder/api/v1/";
 
+      var histChart = {
+        id: "histChart",
+        //            height: 400,
+        body: {
+          view: "form",
+          id: "histForm",
+          elements: [
+            {
+              localId: "histogramChart",
+              id: "histogramChart",
+              view: "chart",
+              height: 460,
+              width: 630,
+              type: "splineArea",
+              scale: "logarithmic",
+              yValue: "#yValue#",
+              color: "#36abee",
+              dynamic: false,
+              yAxis: {
+                template: (yValue) =>
+                  yValue % 50
+                    ? ""
+                    : `<span title='${yValue}' class='y-axis-number-item ellipsis-text'>${yValue}</span>`,
+              },
+              xAxis: {
+                // start: 0,
+                // end: 255,
+                // step: 0,
+                template: function (obj) {
+                  return obj.binNum % 25
+                    ? ""
+                    : `<span title='${Math.floor(obj.xValue)}'>${Math.floor(
+                        obj.xValue
+                      )}</span>`;
+                },
+                //#"#xValue#"
+                // obj => {
+                // }
+              },
+            },
+            {
+              margin: 5,
+              cols: [
+                {
+                  name: "min",
+                  view: "text",
+                  label: "min",
+                },
+                {
+                  name: "max",
+                  view: "text",
+                  label: "max",
+                },
+              ],
+            },
+            {
+              margin: 5,
+              cols: [
+                {
+                  name: "range",
+                  view: "text",
+                  label: "range",
+                },
+                {
+                  name: "samples",
+                  view: "text",
+                  label: "samples",
+                },
+              ],
+            },
+          ],
+        },
+      };
 
-        // we now detected min max as 0 - 256... so... hmmm... thats probably wrong...
-
-        // so how do I determine if it's an 8 or 16 bit image..
-
-        // https://www.caringbridge.org/visit/jacobleogutman
-
-
-
-
-        // so that becomes my range...  
-
-
-        // just take the %.. 
-
-
-        // samples is the sum  -- 2987750 ... take the 0.02%
-
-        // so then coutn forward and count backwards from the end... and then go from there..
-
-
-
-        // $roots keeps previous parent properties as they will be added as a prefix for each prop.
-        // $sep is just a preference if you want to seperate nested paths other than dot.
-        const flatten = (obj, roots = [], sep = '.') => Object
-            // find props of given object
-            .keys(obj)
-            // return an object by iterating props
-            .reduce((memo, prop) => Object.assign(
+      const flatten = (obj, roots = [], sep = ".") =>
+        Object
+          // find props of given object
+          .keys(obj)
+          // return an object by iterating props
+          .reduce(
+            (memo, prop) =>
+              Object.assign(
                 // create a new object
                 {},
                 // include previously returned object
                 memo,
-                Object.prototype.toString.call(obj[prop]) === '[object Object]'
-                // keep working if value is an object
-                ?
-                flatten(obj[prop], roots.concat([prop]))
-                // include current prop and value and prefix prop with the roots
-                :
+                Object.prototype.toString.call(obj[prop]) === "[object Object]"
+                  ? // keep working if value is an object
+                    flatten(obj[prop], roots.concat([prop]))
+                  : // include current prop and value and prefix prop with the roots
+                    {
+                      [roots.concat([prop]).join(sep)]: obj[prop],
+                    }
+              ),
+            {}
+          );
+
+      const thumbDataView = {
+        view: "dataview",
+        id: "imageDataView",
+        gravity: 4,
+        type: {
+          width: 260,
+          height: 260,
+        },
+        select: true,
+        navigation: true,
+        on: {
+          onAfterSelect: function (ev, id) {
+            var item = this.getSelectedItem();
+
+            //get the tile information as well to look for frames
+            $.getJSON(serverApiURL + "item/" + item._id + "/tiles").then(
+              (t) => {
+                $$("imageInfoDataTable").clearAll();
+                $$("imageInfoDataTable").parse(t);
+                console.log(t);
+              }
+            );
+
+            smartThumb(item);
+
+            $.getJSON(
+              serverApiURL + "item/" + item._id + "/tiles/histogram"
+            ).then((d) => {
+              //    console.log(d);
+              //    console.log(item);
+              //data is in d[0]
+              //d.range min max samples
+              //replacing this to use the bin_edges.. I think it makes more sense
+              const histogram = d[0];
+              const chartValues = histogram.hist.map((value, i) => ({
+                xValue: histogram.bin_edges[i],
+                yValue: value,
+                binNum: i,
+              }));
+              $$("histogramChart").clearAll();
+
+              //  console.log(chartValues);
+              $$("histogramChart").parse(chartValues);
+              //   console.log(chartValues);
+
+              $$("histForm").setValues(histogram);
+            });
+          },
+        },
+
+        template: function (obj) {
+          var styleJson = encodeURIComponent(
+            JSON.stringify({
+              bands: [
                 {
-                    [roots.concat([prop]).join(sep)]: obj[prop]
-                }
-            ), {})
-
-
-        const thumbDataView = {
-            view: "dataview",
-            id: "imageDataView",
-            gravity: 4,
-            type: {
-                width: 260,
-                height: 260
-
-            },
-            select: true,
-            navigation: true,
-            on: {
-                onAfterSelect: function(ev, id) {
-                    var item = this.getSelectedItem();
-
-                    //get the tile information as well to look for frames
-
-                    $.getJSON(serverApiURL + "item/" + item._id + "/tiles").then(t => {
-
-                        $$("imageInfoDataTable").clearAll()
-                        $$("imageInfoDataTable").parse(t);
-                        console.log(t)
-                    })
-
-
-                    $.getJSON(serverApiURL + "item/" + item._id + "/tiles/histogram").then(d => {
-                        console.log(d)
-                            //data is in d[0]
-                            //d.range min max samples
-                            //replacing this to use the bin_edges.. I think it makes more sense
-                        const histogram = d[0];
-                        const chartValues = histogram.hist.map((value, i) => ({
-                            xValue: histogram.bin_edges[i],
-                            yValue: value,
-                            binNum: i
-                        }));
-                        $$('histogramChart').clearAll();
-
-                        console.log(chartValues)
-                        $$('histogramChart').parse(chartValues);
-                        console.log(chartValues)
-
-                        $$('histForm').setValues(histogram)
-                    })
-
-                }
-            },
-
-            template: "<img src=https://imaging.htan.dev/girder/api/v1/item/#_id#/tiles/thumbnail?frame=0&style=" +
-                encodeURIComponent(JSON.stringify({
-                    bands: [{
-                        palette: ['#000000', '#0000ff'],
-                        max: "auto"
-                    }, {
-                        frame: 1,
-                        palette: ['#000000', '#00ff00'],
-                        max: "auto"
-                    }, {
-                        frame: 2,
-                        palette: ['#000000', '#ff0000'],
-                        max: "auto"
-                    }]
-                })) + " ></img>"
-        }
-
-        webix.ready(function() {
-
-            $.getJSON("./mvpImageData.working.json").then(d => {
-
-                // d.forEach(element => {
-                //     $$("imageDataTable").parse(flatten(element))
-                // });
-
-                console.log(d)
-                $$("rawImageList").parse(d)
-                    // $$("imageDataTable").parse(d)
-                $$("imageDataView").parse(d)
-
-
-
-
+                  palette: ["#000000", "#0000ff"],
+                  max: "auto",
+                },
+                {
+                  frame: 1,
+                  palette: ["#000000", "#00ff00"],
+                  max: "auto",
+                },
+                {
+                  frame: 2,
+                  palette: ["#000000", "#ff0000"],
+                  max: "auto",
+                },
+              ],
             })
-        })
+          );
 
+          return (
+            `${obj.name}<br><img src=https://imaging.htan.dev/girder/api/v1/item/${obj._id}/tiles/thumbnail?frame=0&style=` +
+            styleJson +
+            "></img>"
+          );
+        },
+      };
 
-        webix.ui({
-            "cols": [{
-                "width": 200,
-                "rows": [{
-                    "padding": {
-                        "left": 10
+      webix.ready(function () {
+        $.getJSON("./mvpImageData.thumbnail.json").then((d) => {
+          // d.forEach(element => {
+          //     $$("imageDataTable").parse(flatten(element))
+          // });
+          console.log(d);
+          $$("rawImageList").parse(d);
+          // $$("imageDataTable").parse(d)
+          $$("imageDataView").parse(d);
+        });
+      });
+
+      webix.ui({
+        cols: [
+          {
+            width: 200,
+            rows: [
+              {
+                padding: {
+                  left: 10,
+                },
+                cols: [
+                  {
+                    view: "label",
+                    label: "Images",
+                  },
+                  {
+                    view: "icon",
+                    icon: "wxi-search",
+                  },
+                ],
+              },
+              {
+                view: "list",
+                id: "rawImageList",
+                template: "#name#",
+                on: {
+                  onItemClick: function (ev, id) {
+                    console.log(id);
+                  },
+                },
+              },
+            ],
+          },
+          {
+            rows: [
+              {
+                cols: [
+                  {
+                    header: "datatable",
+                    body: {
+                      view: "datatable",
+                      autoConfig: true,
+                      id: "imageInfoDataTable",
                     },
-                    "cols": [{
-                        "view": "label",
-                        "label": "Images"
-                    }, {
-                        "view": "icon",
-                        "icon": "wxi-search"
-                    }]
-                }, {
-                    "view": "list",
-                    id: "rawImageList",
-                    template: "#name#",
-                    on: {
-                        onItemClick: function(ev, id) {
-                            console.log(id)
-
-
-                        }
-                    }
-                }]
-            }, {
-                "rows": [{
-                        cols: [{
-                            header: "datatable",
+                  },
+                ],
+              },
+              {
+                cols: [
+                  thumbDataView,
+                  {
+                    rows: [
+                      {
+                        cols: [
+                          {
+                            header: "DSASceneSet",
                             body: {
-                                "view": "datatable",
-                                autoConfig: true,
-                                id: "imageInfoDataTable"
-                            }
-                        }]
-                    }
-
-                    , {
-                        "cols": [thumbDataView,
-
-                            // {
-                            //     "view": "chart",
-                            //     "type": "barH",
-                            //     id: "histogram",
-                            //     "yAxis": {
-                            //         "template": "#value#"
-                            //     },
-                            //     "xAxis": {},
-                            //     "color": "#color#",
-                            //     "url": ""
-                            // },
-                            histChart
-                        ]
-                    }
-                ]
-            }]
-        })
+                              view: "template",
+                              id: "thumbSceneImg",
+                              height: 256,
+                              template:
+                                "<img src='https://imaging.htan.dev/girder/api/v1/item/#_id#/tiles/thumbnail?frame=0&#thumbStyle#'><br>#thumbStyle#",
+                            },
+                          },
+                          groupsPanel,
+                        ],
+                      },
+                      histChart,
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
     </script>
-</body>
-
+  </body>
 </html>
 <!-- 
 // { "view": "chart", "type": "spline", "xAxis": { "template": "#value#", "lines": false },
@@ -325,3 +398,43 @@
         //   }]
         // }));
 // }, -->
+<!-- 
+
+// this._colorPicker,
+// this._rangeSlider,
+// {
+//         cols: [
+//                 {
+//                         view: "button",
+//                         css: "btn-contour",
+//                         label: "Cancel",
+//                         click: () => {
+//                                 this.getForm().setValues(this._initValues);
+//                                 this.applyChanges();
+//                                 this.closeWindow();
+//                         }
+//                 },
+//                 {},
+
+//         style: {"min":0,"max":15000,"palette":["rgb(0,0,0)","hsl(270, 100%, 50%)"]}
+
+// this one looks fine...
+
+// 608c6f1ec5ef1e6743780d54 is the image ID.. and 10 is the frame..
+
+// we now detected min max as 0 - 256... so... hmmm... thats probably wrong...
+
+// so how do I determine if it's an 8 or 16 bit image..
+
+// https://www.caringbridge.org/visit/jacobleogutman
+
+// so that becomes my range...
+
+// just take the %..
+
+// samples is the sum  -- 2987750 ... take the 0.02%
+
+// so then coutn forward and count backwards from the end... and then go from there..
+
+// $roots keeps previous parent properties as they will be added as a prefix for each prop.
+// $sep is just a preference if you want to seperate nested paths other than dot. -->
