@@ -21,7 +21,14 @@
     </style>
   </head>
 
-  <body>
+  <body style="width:100%; height:100%">
+    <div id="osdContainer" style="width:100%; height:100%">
+      <div id="osdViewer1" style="width:800px;height:600px" class="viewer-container openseadragon"></div>
+    </div>
+  <!-- </body>
+  
+
+  <body> -->
     <script type="text/javascript" charset="utf-8">
       /* app code */
 
@@ -90,7 +97,47 @@
               //   },
               //   delete: (ev, id) => {
               //     this.removeChannel(id);
-              //   },
+              //   },webix.ui({
+
+                
+
+  webix.ready(function() {
+    osdViewer = OpenSeadragon({
+      id: "osdContainer",
+      prefixUrl: "/lib/openseadragon/images/",
+    });
+
+/*    $.getJSON("multiPatientGridData.json").then(function(data) {
+      //console.table(data);
+      $$("dataSetCombo").getPopup().getList().clearAll();
+      $$("dataSetCombo").getPopup().getList().parse(data);
+      id = $$("dataSetCombo").getPopup().getList().getFirstId();
+
+      dsList = $$("dataSetCombo").getPopup().getList();
+      itemData = dsList.getItem(id);
+      $$("dataSetCombo").setValue(id);
+
+      $$("gridSizeDataTable").parse(itemData.tileData)
+    })*/
+
+    //$$(this).getPopup().getList().getItem(id);
+    // osdViewer.addHandler("open", viewerOpened);
+    // overlay = osdViewer.svgOverlay();
+
+    // var dsaSpxHeader = { view: "label", type: "header", css: "my_style", label: "dsaMultiFrameComboViewer", align: "center" }
+
+    // webix.ui({
+    //   rows: [dsaSpxHeader,
+    //     toolbar,
+
+//     container:"listA",
+//     view:"editlist",
+//     template:"#rank#. #title#",
+//     editable:true,
+//     editor:"text",
+//     editValue:"title", 
+//     data:big_film_set
+// });
               //   palette: (ev, id) => {
               //     this.showPaletteWindow(id);
               //   },

@@ -100,7 +100,7 @@ for i in tqdm.tqdm(itemSet):
 				ioparams['frameCount'] = len(tileMetadata['frames'])
 
 			if 'channelmap' in tileMetadata:
-				ioparams['channelmap'] = tileMetadata['channelmap']
+				ioparams['channelmap'] = tileMetadata['channelmap']p
 
 #			print("Now trying to get the histogram... for ",i['name'],i['_id'])
 			hist = gc.get("item/%s/tiles/histogram?frame=0" % i['_id'])[0]
@@ -161,13 +161,4 @@ with open("mvpImageData.working.json", "w") as fp:
 	json.dump(dsaCrossWalk, fp)
 
 
-with open("mvpImageData.thumbnail.json", "w") as fp:
-	json.dump(itemData
 
-
-
-
-# imageBitDepth
-##
-
-# ioParams: { defaultImgThumbUrl: "", imageBitDepth: ""}
