@@ -9,6 +9,9 @@ import time
 import tqdm
 import urllib.parse
 # Adding girder_utils path
+
+updateMetadata = False
+
 sys.path.insert(0, "../loadBucketData")
 
 gc = girder_client.GirderClient(apiUrl=s.apiUrl)
@@ -85,7 +88,7 @@ for i in tqdm.tqdm(itemSet):
 	else:
 		if 'htanMeta' not in i['meta']:
 			if i['name'] in htanMetaToFile:
-				gc.addMetadataToItem(i['_id'], {'htanMeta': htanMetaToFile[i['name']]})
+				if updateMetadata: gc.addMetadataToItem(i['_id'], {'htanMeta': htanMetaToFile[i['name']]})
 				addedMeta += 1
 		if 'ioparams' not in i['meta']:
 			gc.addMetadataToItem(i['_id'], {'ioparams': {"Place": "Holder"}})
@@ -100,7 +103,7 @@ for i in tqdm.tqdm(itemSet):
 				ioparams['frameCount'] = len(tileMetadata['frames'])
 
 			if 'channelmap' in tileMetadata:
-				ioparams['channelmap'] = tileMetadata['channelmap']p
+				ioparams['channelmap'] = tileMetadata['channelmap']
 
 #			print("Now trying to get the histogram... for ",i['name'],i['_id'])
 			hist = gc.get("item/%s/tiles/histogram?frame=0" % i['_id'])[0]
@@ -110,7 +113,7 @@ for i in tqdm.tqdm(itemSet):
 			ioparams['max'] = hist['max']
 			ioparams['range'] = hist['range']
 			ioparams['hist'] = hist
-			gc.addMetadataToItem(i['_id'], {'ioparams': ioparams})
+			if updateMetadata: gc.addMetadataToItem(i['_id'], {'ioparams': ioparams})
 
 		else:
 			# So we have an ioparams let's check the default thumburl?
@@ -126,7 +129,7 @@ for i in tqdm.tqdm(itemSet):
 
 				ioparams['thumbnailUrl'] = thumbnailString
 				# print(ioparams['thumbnailUrl'])
-				gc.addMetadataToItem(i['_id'], {'ioparams': ioparams})
+				if updateMetadata: gc.addMetadataToItem(i['_id'], {'ioparams': ioparams})
 
 		if 'omeSceneDescription' not in i['meta']:
 
@@ -135,7 +138,7 @@ for i in tqdm.tqdm(itemSet):
 				md = formatChannelData(tileMetadata)
 				if md:
 					print("Got some frame data!")
-					gc.addMetadataToItem(i['_id'], {'omeSceneDescription': md})
+					if updateMetadata: gc.addMetadataToItem(i['_id'], {'omeSceneDescription': md})
 			except:
 				problemItems.append(i)
 				print("Could not load metadata for %s" % i['_id'])
@@ -159,6 +162,10 @@ dsaCrossWalk = {x['meta']['htanMeta']['SynapseID']: {'dsaId': x['_id'],
 
 with open("mvpImageData.working.json", "w") as fp:
 	json.dump(dsaCrossWalk, fp)
+
+## Pushing over the thumbnail data as an array
+with open("mvpImageData.thumbnail.json", "w") as fp:
+	json.dump(itemData, fp)
 
 
 
