@@ -37,7 +37,7 @@
     "json-formatter-js": "^2.2.0",
     "dot-object": "^1.7.1",
     "papaparse": "^5.2.0",
-    "xlsx": "^0.16.6",
+    "xlsx": "^0.17.0",
     "ajv": "^6.12.2"
   }
 }
